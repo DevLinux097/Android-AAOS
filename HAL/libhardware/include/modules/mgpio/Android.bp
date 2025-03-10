@@ -1,0 +1,16 @@
+cc_defaults {
+    name: "mpio_defaults",
+    cflags: ["-Wall", "-Werror"],
+    header_libs: ["libhardware_headers"],
+    shared_libs: [
+        "liblog",
+        "libcutils",
+    ],
+}
+
+cc_library_shared {
+    name: "mgpio.default",
+    defaults: ["mpio_defaults"],
+    srcs: ["mgpio.c"],
+    relative_install_path: "hw",
+}

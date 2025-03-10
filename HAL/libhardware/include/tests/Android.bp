@@ -1,0 +1,15 @@
+cc_binary {
+    name: "mgpio_hal_test",
+    srcs: ["mgpio_hal_test.cpp"],
+
+    shared_libs: [
+        "liblog",
+        "libhardware",
+    ],
+
+    cflags: [
+        "-Wall",
+        "-Werror",
+        "-Wextra",
+    ],
+}
