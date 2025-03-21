@@ -1,0 +1,11 @@
+aidl_interface {
+    name: "android.hardware.mgpio",
+    vendor_available: true,
+    unstable: true,
+    srcs: [
+        "android/hardware/mgpio/Direction.aidl",
+        "android/hardware/mgpio/Status.aidl",
+        "android/hardware/mgpio/Voltage.aidl",
+        "android/hardware/mgpio/IMgpio.aidl",
+    ],
+}

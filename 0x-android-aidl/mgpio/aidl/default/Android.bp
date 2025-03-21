@@ -1,0 +1,30 @@
+cc_library_shared {
+    name: "libmgpio",
+    srcs: [
+        "Mgpio.cpp",
+    ],
+    shared_libs: [
+        "libbase",
+        "libbinder_ndk",
+        "android.hardware.mgpio-ndk",
+    ],
+    vendor: true,
+}
+
+// HIDL Binderized service implementation
+cc_binary {
+    name: "android.hardware.mgpio-service",
+    relative_install_path: "hw",
+    init_rc: ["mgpio.rc"],
+    vintf_fragments: ["mgpio.xml"],
+    vendor: true,
+    shared_libs: [
+        "libbase",
+        "libbinder_ndk",
+        "android.hardware.mgpio-ndk",
+        "libmgpio",
+    ],
+    srcs: [
+        "service.cpp",
+    ],
+}
