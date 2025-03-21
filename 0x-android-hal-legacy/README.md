@@ -1,24 +1,26 @@
 
-# Hướng Dẫn Chi Tiết Xây Dựng GPIO HAL Module Trên AAOS
+# Hướng Dẫn Chi Tiết Xây Dựng GPIO HAL Module Trên AAOS 15
 Trong bài viết này, chúng ta sẽ đi sâu vào từng bước để xây dựng một module HAL điều khiển GPIO trên Android. Ngoài ra, mình sẽ giải thích chi tiết vai trò của các hàm, đường dẫn tới các file, cách biên dịch và chạy test.
 
 ## 1. Tổng quan về HAL
 HAL là gì? HAL (Hardware Abstraction Layer) là tầng trung gian giữa phần cứng và hệ điều hành. Nó cung cấp các API trừu tượng để tầng ứng dụng hoặc framework có thể giao tiếp với phần cứng mà không cần biết chi tiết cách phần cứng hoạt động.
 
-Trong Android HAL được tổ chức dưới dạng thư viện chia sẻ (shared library). Các thư viện HAL được định nghĩa theo chuẩn và giao tiếp thông qua các cấu trúc dữ liệu và API cụ thể.
+Trong Android HAL được tổ chức dưới dạng shared library. Các thư viện HAL được định nghĩa theo chuẩn và giao tiếp thông qua các cấu trúc dữ liệu và API cụ thể.
 
 ## 2. Cấu trúc thư mục dự án
 Dưới đây là cấu trúc thư mục của dự án:
 
+```sh
     android_source/hardware/libhardware/
     ├── include/hardware
     │   └── mgpio.h         # File header định nghĩa cấu trúc và API cho GPIO HAL
     ├── modules/mgpio
     │   ├── Android.bp      # File build script cho HAL
     │   └── mgpio.c         # File hiện thực HAL
-    └── tests
+    └── tests/mgpio
         ├── Android.bp      # File build script cho test
         └── mgpio_hal_test.cpp # File kiểm thử HAL
+```
 
 Vai trò của từng file:
 -  **mgpio.h**:
@@ -28,8 +30,10 @@ Vai trò của từng file:
 -  **mgpio.c**:
 	- Triển khai các API đã định nghĩa trong mgpio.h.
 	- Thực hiện các thao tác cụ thể với GPIO thông qua sysfs (/sys/class/gpio/).
+
 -  **Android.bp**:
 	- File build script của hệ thống Android để biên dịch HAL và chương trình kiểm thử.
+
 - **mgpio_hal_test.cpp**:
 	- Chương trình để test HAL.
 	- Sử dụng các API từ HAL để kiểm tra việc điều khiển GPIO.
@@ -89,11 +93,13 @@ __END_DECLS
 ```
 
 #### **Giải thích các thành phần:**
-- **#define GPIO_HARDWARE_MODULE_ID "mgpio":**   Đây là ID duy nhất để nhận diện module HAL. Tầng framework sẽ sử dụng ID này để tải module HAL.  
--   **struct gpio_device_t:**
+- **#define GPIO_HARDWARE_MODULE_ID "mgpio":**   Đây là ID duy nhất để nhận diện module HAL. Tầng framework sẽ sử dụng ID này để tải module HAL.
+  
+-   **struct mgpio_device_t:**
 	-  Đại diện cho thiết bị GPIO.
     -   Chứa các hàm để thực hiện các thao tác như  `gpio_export`,  `gpio_direction`,  `gpio_read`, v.v.
--   **struct gpio_module_t:**
+
+-   **struct mgpio_module_t:**
     -   Đại diện cho toàn bộ module HAL.
     -   Chứa thông tin chung về module như tên, phiên bản, và các phương thức.
 
@@ -106,15 +112,19 @@ File `mgpio.c` triển khai các API đã định nghĩa trong `mgpio.h`. Các h
 -  **gpio_export(int32_t pin):**
     -   Export GPIO để sử dụng.
     -   Ghi số chân GPIO vào file  `/sys/class/gpio/export`.
+  
 -  **gpio_unexport(int32_t pin):**
     -   Unexport GPIO khi không còn sử dụng.
     -   Ghi số chân GPIO vào file  `/sys/class/gpio/unexport`.
+
 -  **gpio_direction(int32_t pin, int32_t dir):**
     -   Thiết lập hướng GPIO là input hoặc output.
     -   Ghi giá trị  `"in"`  hoặc  `"out"`  vào file `/sys/class/gpio/gpio<pin>/direction`.
+
 -  **gpio_read(int32_t pin):**
     -   Đọc giá trị từ chân GPIO.
     -   Đọc từ file  `/sys/class/gpio/gpio<pin>/value`.
+
 -  **gpio_write(int32_t pin, int32_t value):**
     -   Ghi giá trị vào chân GPIO.
     -   Ghi  `"0"`  hoặc  `"1"`  vào file  `/sys/class/gpio/gpio<pin>/value`.
@@ -156,21 +166,59 @@ int main() {
 ```
 
 ## 3. Cách biên dịch và chạy kiểm thử
-### 3.1. Biên dịch
-Sử dụng công cụ `m` của Android để biên dịch:
-`m mgpio_hal_test`
+### 3.1. Biên dịch HAL module
+Build toàn bộ HAL module
+
+```sh
+m mgpio.default
+```
+
+Kiểm tra file đã được build
+
+```sh
+ls -l $OUT/vendor/lib64/hw/mgpio.default.so
+```
+
+### 3.2. Biên dịch chương trình test
+```sh
+m mgpio_hal_test
+```
+
 Sau khi biên dịch xong, file `mgpio_hal_test` sẽ được tạo ra.
-### 3.2. Chạy kiểm thử
-- Đẩy chương trình kiểm thử lên thiết bị:
-    `adb push mgpio_hal_test /data/local/tmp` 
 
-- Cấp quyền thực thi:
-    `adb shell chmod +x /data/local/tmp/mgpio_hal_test` 
+```sh
+ls -l $OUT/vendor/bin/mgpio_hal_test
+```
 
-- Chạy chương trình kiểm thử:
-    `adb shell /data/local/tmp/mgpio_hal_test` 
-4.  Quan sát kết quả:
-Nếu thành công, GPIO 181 sẽ được bật, và bạn sẽ thấy thông báo  `GPIO 181 turned ON successfully!`.
+### 3.3. Cài đặt HAL
+#### 3.3.1. Cài đặt HAL
+```sh
+adb root
+adb remount
+adb push $OUT/vendor/lib64/hw/mgpio.default.so /vendor/lib64/hw/
+```
+
+#### 3.3.2. Cài đặt chương trình test
+```sh
+adb push $OUT/vendor/bin/mgpio_hal_test /vendor/bin/
+```
+
+### 3.3. Thiết lập quyền
+```sh
+adb shell chmod 644 /vendor/lib64/hw/mgpio.default.so
+adb shell chmod 755 /vendor/bin/mgpio_hal_test
+adb shell chown root:root /vendor/lib64/hw/mgpio.default.so
+adb shell chown root:shell /vendor/bin/mgpio_hal_test
+```
+
+### 3.4. Chạy test và quan sát kết quả:
+Chạy test binary
+
+```sh
+adb shell /vendor/bin/mgpio_hal_test
+```
+
+Nếu thành công, GPIO 181 sẽ được bật, và bạn sẽ thấy thông báo `GPIO 181 turned ON successfully!`.
 
 ## 4. Kết luận
 Qua bài viết này, bạn đã hiểu cách xây dựng một module HAL để điều khiển GPIO trên Android. Từ việc định nghĩa API, hiện thực HAL, viết script build, đến kiểm thử, bạn đã có cái nhìn tổng quan và chi tiết về cách hoạt động của HAL trong hệ điều hành Android.

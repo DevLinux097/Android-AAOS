@@ -24,7 +24,7 @@ typedef enum ErrorCode
 } error_code_e;
 
 // Represent for device
-struct gpio_device_t {
+struct mgpio_device_t {
     struct hw_device_t common;
     int (*gpio_export)(int32_t pin);
     int (*gpio_unexport)(int32_t pin);
@@ -34,7 +34,7 @@ struct gpio_device_t {
 };
 
 // Represent for all of methods and propeties on device
-struct gpio_module_t {
+struct mgpio_module_t {
     struct hw_module_t common;
 };
 

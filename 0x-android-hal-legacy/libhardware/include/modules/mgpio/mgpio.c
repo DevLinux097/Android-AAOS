@@ -14,7 +14,7 @@ static struct hw_module_methods_t gpio_module_methods = {
     .open = gpio_device_open,
 };
 
-struct gpio_module_t HAL_MODULE_INFO_SYM = {
+struct mgpio_module_t HAL_MODULE_INFO_SYM = {
     .common = {
         .tag = HARDWARE_MODULE_TAG,
         .module_api_version = 1,
@@ -139,15 +139,15 @@ static int gpio_device_close(struct hw_device_t *device)
 
 static int gpio_device_open(const struct hw_module_t* module, const char* name, struct hw_device_t** device) 
 {
-    struct gpio_device_t* dev;
+    struct mgpio_device_t* dev;
 
-    dev = (struct gpio_device_t *)malloc(sizeof(struct gpio_device_t));
+    dev = (struct mgpio_device_t *)malloc(sizeof(struct mgpio_device_t));
     if(dev == NULL) {
         fprintf(stderr, "Unable to reserve memory for mgpio hal: %s, ID: %s\n", strerror(errno), name);
         return -ENOMEM;
     }
 
-    memset(dev, 0, sizeof(struct gpio_device_t));
+    memset(dev, 0, sizeof(struct mgpio_device_t));
 
     /* Initialize common fields */
     dev->common.tag = HARDWARE_DEVICE_TAG;
