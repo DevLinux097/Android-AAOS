@@ -1,0 +1,11 @@
+cc_library_shared {
+    name: "mmath",
+    srcs: ["src/mmath.cpp"],
+    include_dirs: ["external/helloworld/include"],
+}
+
+cc_binary {
+    name: "hello_world",
+    srcs: ["src/hello_world.cpp"],
+    shared_libs: ["mmath"],
+}
