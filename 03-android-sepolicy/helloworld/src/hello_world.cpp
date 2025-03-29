@@ -1,26 +1,17 @@
 #include <iostream>
 #include <fstream>
-#include "../include/mmath.h"
+#include <string>
 
 int main() {
-    int a = 10;
-    int b = 5;
-
-    std::cout << "Hello, World!" << std::endl;
-    std::cout << "Addition: " << add(a, b) << std::endl;
-    std::cout << "Subtraction: " << subtract(a, b) << std::endl;
-    std::cout << "Multiplication: " << multiply(a, b) << std::endl;
-    std::cout << "Division: " << divide(a, b) << std::endl;
-
-    std::ofstream file("/data/selinux.txt");
-
-    if (file.is_open()) {
-        file << "Hello SELinux";
-        std::cout << "Write to file selinux.txt Successfully" << std::endl;
-        file.close();
-    } else {
-        std::cerr << "Cannot open file!" << std::endl;
+    fstream file("/data/selinux.txt", ios::in | ios::out);
+    if (!file.is_open()) {
+        cout << "Unable to open file!" << endl;
+        return 1;
     }
+
+    file << "Hello Selinux\n";
+    file.close();
+    std::cout << "File reading and writing completed!" << endl;
 
     return 0;
 }
