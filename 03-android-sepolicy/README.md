@@ -38,7 +38,7 @@ android_source/device/brcm/rpi4/sepolicy/
 ```
 
 Vai trò của từng file/thư mục:
-- *`external/helloworld/`**:  Chứa mã nguồn của ứng dụng "hello_world".
+- **`external/helloworld/`**:  Chứa mã nguồn của ứng dụng "hello_world".
 - **`Android.bp`**:  File build script cho Bazel, định nghĩa cách build ứng dụng.
 - **`src/hello_world.cpp`**:  Mã nguồn chính, in thông báo và ghi vào file `/data/selinux.txt`.
 

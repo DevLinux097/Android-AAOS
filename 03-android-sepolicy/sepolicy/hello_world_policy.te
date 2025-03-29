@@ -1,0 +1,17 @@
+module hello_world_policy 1.0;
+
+require {
+    type helloworld_exec;              # Type for the executable.
+    type selinux_txt_file;              # Type for the text file.
+    class file { read write open };     # Permissions we'll use for files.
+}
+
+# Define types and associate them with type attributes.
+type hello_world_exec, exec_type;       # hello_world_exec is an executable type.
+type selinux_txt_file, file_type;       # selinux_txt_file is a regular file type.
+
+# Set up a standard domain for the hello_world process.
+init_daemon_domain(hello_world_exec);
+
+# Allow the hello_world process to read, write, and open the selinux.txt file.
+allow hello_world_exec selinux_txt_file:file { read write open };

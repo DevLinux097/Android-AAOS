@@ -1,0 +1,5 @@
+# Set up a standard domain for the hello_world process.
+init_daemon_domain(hello_world_exec);
+
+# Allow the hello_world process to read, write, and open the selinux.txt file.
+allow hello_world_exec selinux_txt_file:file { read write open };
